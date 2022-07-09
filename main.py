@@ -1,6 +1,9 @@
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
+
+index_order_list = ['Sueño', 'Comida', 'Higiene', 'Deporte', 'Hogar', 'Tareas', 'Hobbies', 'Recompensas', 'Vicios']
 
 
 def read_register_spreadsheet(sheet_url):
@@ -21,6 +24,24 @@ def clean_register(register, date):
     return register
 
 
+def task_frequency(register):
+    frequency = register.set_index('Tarea', drop=True)
+    frequency = frequency.sum(axis=1)
+    days = len(register.select_dtypes(include=np.number).columns)
+    frequency = frequency / days * 100
+    return frequency, days
+
+
+def normalized_points(register):
+    groups = register.groupby('Grupo')
+    groups_sum = groups.sum()
+    groups_sum = groups_sum.reindex(index_order_list)
+    groups_size = groups.size()
+    groups_size = groups_size.reindex(index_order_list)
+    groups_norm = groups_sum.divide(groups_size, axis=0)
+    return groups_norm, groups
+
+
 if __name__ == '__main__':
     # Sample data
     # url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
@@ -34,3 +55,5 @@ if __name__ == '__main__':
 
     data = read_register_spreadsheet(url)
     data = clean_register(data, day)
+    frequency_tasks, time_days = task_frequency(data)
+    groups_points, register_groups = normalized_points(data)
