@@ -79,6 +79,25 @@ def plot_frequency_histogram_tasks(frequency, days):
     return fig
 
 
+def plot_frequency_histogram_groups(register, frequency, days):
+    # Frequency histogram for task groups
+    group_frequency = register[['Grupo', 'Tarea']]
+    group_frequency['Frecuencia'] = frequency.values
+    group_frequency = group_frequency.groupby('Grupo')
+    group_frequency = group_frequency.mean()
+    group_frequency = group_frequency.reindex(index_order_list)
+
+    plot = group_frequency.plot(kind='bar', legend=False, zorder=3, yticks=range(0, 101, 10))
+    plt.ylabel('Tarea completada (% días)')
+    plt.title(f'Días: {days}')
+    plt.grid(axis='y', zorder=0)
+    plt.tight_layout()
+
+    plt.show()
+    fig = plot.get_figure()
+    return fig
+
+
 if __name__ == '__main__':
     # Sample data
     # url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
@@ -97,3 +116,4 @@ if __name__ == '__main__':
 
     plot1 = plot_daily_task_register(data)
     plot2 = plot_frequency_histogram_tasks(frequency_tasks, time_days)
+    plot3 = plot_frequency_histogram_groups(data, frequency_tasks, time_days)
