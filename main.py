@@ -68,7 +68,7 @@ def plot_daily_task_register(register):
     days = register.select_dtypes(include=np.number).columns
 
     fig = plt.figure()
-    plt.title(f'Registro diario hábitos')
+    plt.ylabel(f'Registro diario hábitos')
     plt.imshow(a, cmap='gray_r')
     plt.xticks(ticks=range(0, len(days)), labels=list(days))
     plt.yticks(ticks=range(0, len(tasks)), labels=list(tasks))
