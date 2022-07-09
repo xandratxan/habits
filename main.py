@@ -98,6 +98,29 @@ def plot_frequency_histogram_groups(register, frequency, days):
     return fig
 
 
+def plot_completed_task_percentage(register, groups_norm, groups):
+    # Percentage of group task completed in terms of time
+    t_groups_norm = groups_norm.transpose()
+    t_groups_per = t_groups_norm * 100
+    a = np.array([[np.array(i, dtype=np.uint8) for i in j] for j in t_groups_per.transpose().values], dtype=np.uint8)
+    days = register.select_dtypes(include=np.number).columns
+
+    fig = plt.figure()
+    plt.imshow(a, cmap='RdYlGn')
+    plt.colorbar()
+    plt.xticks(ticks=range(0, len(days)), labels=list(days))
+    plt.yticks(ticks=range(0, len(index_order_list)), labels=list(index_order_list))
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.xlim(-0.5, len(days) - 0.5)
+    plt.ylim(len(groups) - 0.5, -0.5)
+    plt.hlines(y=np.arange(0, len(index_order_list) - 1) + 0.5, xmin=-0.5, xmax=len(days), color="gray", linewidth=1)
+    plt.vlines(x=np.arange(0, len(days) - 1) + 0.5, ymin=-0.5, ymax=len(index_order_list), color="gray", linewidth=1)
+
+    plt.show()
+    return fig
+
+
 if __name__ == '__main__':
     # Sample data
     # url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
@@ -117,3 +140,4 @@ if __name__ == '__main__':
     plot1 = plot_daily_task_register(data)
     plot2 = plot_frequency_histogram_tasks(frequency_tasks, time_days)
     plot3 = plot_frequency_histogram_groups(data, frequency_tasks, time_days)
+    plot4 = plot_completed_task_percentage(data, groups_points, register_groups)
