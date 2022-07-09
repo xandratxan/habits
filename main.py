@@ -33,8 +33,6 @@ def clean_register(register, date):
     # Select columns up to date
     today = date.strftime('%d/%m/%y').replace('0', '')
     register = register.loc[:, :today]
-    # Invert values of group columns
-    register = replace_dataframe_group(register)
     # Fill nan with zero
     register = register.fillna(0)
     # Replace string values for numbers
@@ -70,6 +68,7 @@ def plot_daily_task_register(register):
     days = register.select_dtypes(include=np.number).columns
 
     fig = plt.figure()
+    plt.title(f'Registro diario hábitos')
     plt.imshow(a, cmap='gray_r')
     plt.xticks(ticks=range(0, len(days)), labels=list(days))
     plt.yticks(ticks=range(0, len(tasks)), labels=list(tasks))
@@ -87,7 +86,7 @@ def plot_daily_task_register(register):
 def plot_frequency_histogram_tasks(frequency, days):
     # Frequency histogram for tasks
     plot = frequency.plot(kind='bar', zorder=3, yticks=range(0, 101, 10), color=color_list_2)
-    plt.ylabel('Tarea completada (% días)')
+    plt.ylabel('Hábitos diarios (% días realizados)')
     plt.title(f'Días: {days}')
     plt.grid(axis='y', zorder=0)
     plt.tight_layout()
@@ -106,7 +105,7 @@ def plot_frequency_histogram_groups(register, frequency, days):
     group_frequency = group_frequency.reindex(index_order_list)
 
     plot = group_frequency.plot(kind='bar', legend=False, zorder=3, yticks=range(0, 101, 10))
-    plt.ylabel('Tarea completada (% días)')
+    plt.ylabel('Hábitos diarios (% días realizados)')
     plt.title(f'Días: {days}')
     plt.grid(axis='y', zorder=0)
     plt.tight_layout()
@@ -125,6 +124,7 @@ def plot_completed_task_percentage(register, groups_norm, groups):
 
     fig = plt.figure()
     plt.imshow(a, cmap='RdYlGn')
+    plt.title(f'Porcentage de habitos realizados en cada grupo')
     plt.colorbar()
     plt.xticks(ticks=range(0, len(days)), labels=list(days))
     plt.yticks(ticks=range(0, len(index_order_list)), labels=list(index_order_list))
@@ -145,12 +145,14 @@ def plot_daily_points(groups_norm):
     weights = weights * 100 / (weights.sum() + 1)
     groups_weighted = groups_norm.multiply(weights, axis=0)
     t_groups_weighted = groups_weighted.transpose()
+    print(t_groups_weighted['Vicios'].min())
 
     # plot = t_groups_weighted.plot(kind='bar', stacked=True, color=color_list, zorder=3, yticks=range(0, 101, 10))
     plot = t_groups_weighted.plot(kind='bar', stacked=True, color=color_list_1, zorder=3)
     plt.ylabel('Puntos diarios obtenidos')
     plt.legend(loc=(0, 1.05), ncol=3)
     plt.grid(axis='y', zorder=0)
+    plt.ylim(-10, 101)
     plt.tight_layout()
 
     plt.show()
@@ -171,14 +173,14 @@ def pdf_report(file_path, fig1, fig2, fig3, fig4, fig5):
 
 if __name__ == '__main__':
     # Sample data
-    # url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
-    # day = datetime(2022, 7, 11)  # Sample register
-    # path = '/home/txan/Descargas/habitos_modelo.pdf'
+    url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
+    day = datetime(2022, 7, 11)  # Sample register
+    path = '/home/txan/Descargas/habitos_modelo.pdf'
 
     # Actual data
-    url = 'https://docs.google.com/spreadsheets/d/1X5BtfmzyTD_zXmcdnXxK85hmbVBn0spicDqbwev3WYI/edit#gid=0'
-    day = datetime.today()
-    path = '/home/txan/Descargas/habitos.pdf'
+    # url = 'https://docs.google.com/spreadsheets/d/1X5BtfmzyTD_zXmcdnXxK85hmbVBn0spicDqbwev3WYI/edit#gid=0'
+    # day = datetime.today()
+    # path = '/home/txan/Descargas/habitos.pdf'
 
     raw_data = read_register_spreadsheet(url)
     data = clean_register(raw_data, day)
