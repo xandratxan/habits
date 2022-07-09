@@ -22,10 +22,6 @@ def read_register_spreadsheet(sheet_url):
 def replace_dataframe_group(register):
     # Group register by groups, get group dataframe and invert values of day columns
     group = register.groupby('Grupo').get_group('Vicios').replace({'Sí': 'No', 'No': 'Sí'})
-    # Get group dataframe
-    # m2 = m1.get_group('Vicios')
-    # Invert values of day columns
-    # m3 = m2.replace({'Sí': 'No', 'No': 'Sí'})
     # Drop original group from register
     register = raw_data.drop(register.groupby('Grupo').get_group('Vicios').index)
     # Concatenate register and modified group
@@ -146,7 +142,7 @@ def plot_completed_task_percentage(register, groups_norm, groups):
 def plot_daily_points(groups_norm):
     # Daily points by groups
     weights = pd.Series(data=group_weights, index=index_order_list, name='Pesos')
-    weights = weights * 100 / (weights.sum()+1)
+    weights = weights * 100 / (weights.sum() + 1)
     groups_weighted = groups_norm.multiply(weights, axis=0)
     t_groups_weighted = groups_weighted.transpose()
 
