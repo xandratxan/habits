@@ -103,8 +103,10 @@ def plot_frequency_histogram_groups(register, frequency, days):
     group_frequency = group_frequency.groupby('Grupo')
     group_frequency = group_frequency.mean()
     group_frequency = group_frequency.reindex(index_order_list)
+    group_frequency = group_frequency.unstack()
+    group_frequency = group_frequency.droplevel(0)
 
-    plot = group_frequency.plot(kind='bar', legend=False, zorder=3, yticks=range(0, 101, 10))
+    plot = group_frequency.plot(kind='bar', legend=False, zorder=3, yticks=range(0, 101, 10), color=color_list_1)
     plt.ylabel('Hábitos diarios (% días realizados)')
     plt.title(f'Días: {days}')
     plt.grid(axis='y', zorder=0)
