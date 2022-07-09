@@ -5,6 +5,8 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 index_order_list = ['Sueño', 'Comida', 'Higiene', 'Deporte', 'Hogar', 'Tareas', 'Hobbies', 'Recompensas', 'Vicios']
+color_list = ['tab:red', 'orangered', 'orange', 'gold', 'limegreen', 'green', 'lightskyblue', 'tab:blue', 'darkblue']
+group_weights = [2, 2, 1.5, 1.5, 1.3, 1.3, 1, 1, -1]
 
 
 def read_register_spreadsheet(sheet_url):
@@ -121,6 +123,25 @@ def plot_completed_task_percentage(register, groups_norm, groups):
     return fig
 
 
+def plot_daily_points(groups_norm):
+    # Daily points by groups
+    weights = pd.Series(data=group_weights, index=index_order_list, name='Pesos')
+    weights = weights * 100 / (weights.sum()+1)
+    groups_weighted = groups_norm.multiply(weights, axis=0)
+    t_groups_weighted = groups_weighted.transpose()
+
+    # plot = t_groups_weighted.plot(kind='bar', stacked=True, color=color_list, zorder=3, yticks=range(0, 101, 10))
+    plot = t_groups_weighted.plot(kind='bar', stacked=True, color=color_list, zorder=3)
+    plt.ylabel('Puntos diarios obtenidos')
+    plt.legend(loc=(0, 1.05), ncol=3)
+    plt.grid(axis='y', zorder=0)
+    plt.tight_layout()
+
+    plt.show()
+    fig = plot.get_figure()
+    return fig
+
+
 if __name__ == '__main__':
     # Sample data
     # url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
@@ -141,3 +162,4 @@ if __name__ == '__main__':
     plot2 = plot_frequency_histogram_tasks(frequency_tasks, time_days)
     plot3 = plot_frequency_histogram_groups(data, frequency_tasks, time_days)
     plot4 = plot_completed_task_percentage(data, groups_points, register_groups)
+    plot5 = plot_daily_points(groups_points)
