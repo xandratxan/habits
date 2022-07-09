@@ -2,6 +2,7 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 
 index_order_list = ['Sueño', 'Comida', 'Higiene', 'Deporte', 'Hogar', 'Tareas', 'Hobbies', 'Recompensas', 'Vicios']
 
@@ -42,6 +43,30 @@ def normalized_points(register):
     return groups_norm, groups
 
 
+def plot_daily_task_register(register):
+    # Plot daily task register
+    t_register = register.set_index('Tarea', drop=True)
+    t_register = t_register.transpose()
+    t_register = t_register.drop(labels=['Grupo', 'Pregunta'])
+    a = np.array([[np.array(i, dtype=np.uint8) for i in j] for j in t_register.transpose().values], dtype=np.uint8)
+    tasks = register['Tarea']
+    days = register.select_dtypes(include=np.number).columns
+
+    fig = plt.figure()
+    plt.imshow(a, cmap='gray_r')
+    plt.xticks(ticks=range(0, len(days)), labels=list(days))
+    plt.yticks(ticks=range(0, len(tasks)), labels=list(tasks))
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.xlim(-0.5, len(days) - 0.5)
+    plt.ylim(len(tasks) - 0.5, -0.5)
+    plt.hlines(y=np.arange(0, len(tasks) - 1) + 0.5, xmin=-0.5, xmax=len(days), color="gray", linewidth=1)
+    plt.vlines(x=np.arange(0, len(days) - 1) + 0.5, ymin=-0.5, ymax=len(tasks), color="gray", linewidth=1)
+
+    plt.show()
+    return fig
+
+
 if __name__ == '__main__':
     # Sample data
     # url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
@@ -57,3 +82,5 @@ if __name__ == '__main__':
     data = clean_register(data, day)
     frequency_tasks, time_days = task_frequency(data)
     groups_points, register_groups = normalized_points(data)
+
+    plot1 = plot_daily_task_register(data)
