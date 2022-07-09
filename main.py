@@ -6,7 +6,9 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 index_order_list = ['Sueño', 'Comida', 'Higiene', 'Deporte', 'Hogar', 'Tareas', 'Hobbies', 'Recompensas', 'Vicios']
-color_list = ['tab:red', 'orangered', 'orange', 'gold', 'limegreen', 'green', 'lightskyblue', 'tab:blue', 'darkblue']
+color_list_1 = ['tab:red', 'orangered', 'orange', 'gold', 'limegreen', 'green', 'lightskyblue', 'tab:blue', 'darkblue']
+color_list_2 = ['tab:red'] * 3 + ['orangered'] * 3 + ['orange'] * 5 + ['gold'] * 3 + ['limegreen'] * 3 + \
+               ['green'] * 4 + ['lightskyblue'] * 2 + ['tab:blue'] * 2 + ['darkblue'] * 4
 group_weights = [2, 2, 1.5, 1.5, 1.3, 1.3, 1, 1, -1]
 
 
@@ -17,10 +19,26 @@ def read_register_spreadsheet(sheet_url):
     return register
 
 
+def replace_dataframe_group(register):
+    # Group register by groups, get group dataframe and invert values of day columns
+    group = register.groupby('Grupo').get_group('Vicios').replace({'Sí': 'No', 'No': 'Sí'})
+    # Get group dataframe
+    # m2 = m1.get_group('Vicios')
+    # Invert values of day columns
+    # m3 = m2.replace({'Sí': 'No', 'No': 'Sí'})
+    # Drop original group from register
+    register = raw_data.drop(register.groupby('Grupo').get_group('Vicios').index)
+    # Concatenate register and modified group
+    register = pd.concat([register, group], axis=0)
+    return register
+
+
 def clean_register(register, date):
     # Select columns up to date
     today = date.strftime('%d/%m/%y').replace('0', '')
     register = register.loc[:, :today]
+    # Invert values of group columns
+    register = replace_dataframe_group(register)
     # Fill nan with zero
     register = register.fillna(0)
     # Replace string values for numbers
@@ -72,7 +90,8 @@ def plot_daily_task_register(register):
 
 def plot_frequency_histogram_tasks(frequency, days):
     # Frequency histogram for tasks
-    plot = frequency.plot(kind='bar', ylabel='Tarea completada (% días)', zorder=3, yticks=range(0, 101, 10))
+    plot = frequency.plot(kind='bar', zorder=3, yticks=range(0, 101, 10), color=color_list_2)
+    plt.ylabel('Tarea completada (% días)')
     plt.title(f'Días: {days}')
     plt.grid(axis='y', zorder=0)
     plt.tight_layout()
@@ -132,7 +151,7 @@ def plot_daily_points(groups_norm):
     t_groups_weighted = groups_weighted.transpose()
 
     # plot = t_groups_weighted.plot(kind='bar', stacked=True, color=color_list, zorder=3, yticks=range(0, 101, 10))
-    plot = t_groups_weighted.plot(kind='bar', stacked=True, color=color_list, zorder=3)
+    plot = t_groups_weighted.plot(kind='bar', stacked=True, color=color_list_1, zorder=3)
     plt.ylabel('Puntos diarios obtenidos')
     plt.legend(loc=(0, 1.05), ncol=3)
     plt.grid(axis='y', zorder=0)
@@ -165,8 +184,8 @@ if __name__ == '__main__':
     day = datetime.today()
     path = '/home/txan/Descargas/habitos.pdf'
 
-    data = read_register_spreadsheet(url)
-    data = clean_register(data, day)
+    raw_data = read_register_spreadsheet(url)
+    data = clean_register(raw_data, day)
     frequency_tasks, time_days = task_frequency(data)
     groups_points, register_groups = normalized_points(data)
 
