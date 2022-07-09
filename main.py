@@ -67,6 +67,18 @@ def plot_daily_task_register(register):
     return fig
 
 
+def plot_frequency_histogram_tasks(frequency, days):
+    # Frequency histogram for tasks
+    plot = frequency.plot(kind='bar', ylabel='Tarea completada (% días)', zorder=3, yticks=range(0, 101, 10))
+    plt.title(f'Días: {days}')
+    plt.grid(axis='y', zorder=0)
+    plt.tight_layout()
+
+    plt.show()
+    fig = plot.get_figure()
+    return fig
+
+
 if __name__ == '__main__':
     # Sample data
     # url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
@@ -84,3 +96,4 @@ if __name__ == '__main__':
     groups_points, register_groups = normalized_points(data)
 
     plot1 = plot_daily_task_register(data)
+    plot2 = plot_frequency_histogram_tasks(frequency_tasks, time_days)
