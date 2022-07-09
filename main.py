@@ -5,11 +5,11 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-index_order_list = ['Sueño', 'Comida', 'Higiene', 'Deporte', 'Hogar', 'Tareas', 'Hobbies', 'Recompensas', 'Vicios']
-color_list_1 = ['tab:red', 'orangered', 'orange', 'gold', 'limegreen', 'green', 'lightskyblue', 'tab:blue', 'darkblue']
-color_list_2 = ['tab:red'] * 3 + ['orangered'] * 3 + ['orange'] * 5 + ['gold'] * 3 + ['limegreen'] * 3 + \
-               ['green'] * 4 + ['lightskyblue'] * 2 + ['tab:blue'] * 2 + ['darkblue'] * 8
-group_weights = [2, 2, 1.5, 1.5, 1.3, 1.3, 1, 1, -2]
+index_order_list = ['Sueño', 'Comida', 'Higiene', 'Deporte', 'Hogar', 'Tareas', 'Hobbies', 'Vicios']
+color_list_1 = ['tab:red', 'orangered', 'orange', 'gold', 'green', 'lightskyblue', 'tab:blue', 'darkblue']
+color_list_2 = ['tab:red'] * 3 + ['orangered'] * 3 + ['orange'] * 5 + ['gold'] * 3 + ['green'] * 3 + \
+               ['lightskyblue'] * 4 + ['tab:blue'] * 4 + ['darkblue'] * 8
+group_weights = [2, 2, 1.5, 1.5, 1.3, 1.3, 1, -2]
 
 
 def read_register_spreadsheet(sheet_url):
@@ -147,10 +147,9 @@ def plot_daily_points(groups_norm):
     t_groups_weighted = groups_weighted.transpose()
     print(t_groups_weighted['Vicios'].min())
 
-    # plot = t_groups_weighted.plot(kind='bar', stacked=True, color=color_list, zorder=3, yticks=range(0, 101, 10))
-    plot = t_groups_weighted.plot(kind='bar', stacked=True, color=color_list_1, zorder=3)
+    plot = t_groups_weighted.plot(kind='bar', stacked=True, color=color_list_1, zorder=3, yticks=range(-20, 101, 10))
     plt.ylabel('Puntos diarios obtenidos')
-    plt.legend(loc=(0, 1.05), ncol=3)
+    plt.legend(loc=(0, 1.05), ncol=4)
     plt.grid(axis='y', zorder=0)
     plt.ylim(-20, 101)
     plt.tight_layout()
@@ -174,7 +173,7 @@ def pdf_report(file_path, fig1, fig2, fig3, fig4, fig5):
 if __name__ == '__main__':
     # Sample data
     # url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
-    # day = datetime(2022, 7, 11)  # Sample register
+    # day = datetime(2022, 7, 15)  # Sample register
     # path = '/home/txan/Descargas/habitos_modelo.pdf'
 
     # Actual data
