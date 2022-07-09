@@ -3,6 +3,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 index_order_list = ['Sueño', 'Comida', 'Higiene', 'Deporte', 'Hogar', 'Tareas', 'Hobbies', 'Recompensas', 'Vicios']
 color_list = ['tab:red', 'orangered', 'orange', 'gold', 'limegreen', 'green', 'lightskyblue', 'tab:blue', 'darkblue']
@@ -142,6 +143,17 @@ def plot_daily_points(groups_norm):
     return fig
 
 
+def pdf_report(file_path, fig1, fig2, fig3, fig4, fig5):
+    # Save figures to pdf
+    pdffile = PdfPages(file_path)
+    pdffile.savefig(fig1)
+    pdffile.savefig(fig2)
+    pdffile.savefig(fig3)
+    pdffile.savefig(fig4)
+    pdffile.savefig(fig5)
+    pdffile.close()
+
+
 if __name__ == '__main__':
     # Sample data
     # url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
@@ -163,3 +175,5 @@ if __name__ == '__main__':
     plot3 = plot_frequency_histogram_groups(data, frequency_tasks, time_days)
     plot4 = plot_completed_task_percentage(data, groups_points, register_groups)
     plot5 = plot_daily_points(groups_points)
+
+    pdf_report(path, plot1, plot2, plot3, plot4, plot5)
