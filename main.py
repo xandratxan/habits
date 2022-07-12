@@ -172,26 +172,49 @@ def pdf_report(file_path, fig1, fig2, fig3, fig4, fig5):
     pdffile.close()
 
 
-if __name__ == '__main__':
+def compute_tables(sheet_url, date):
+    raw_register = read_register_spreadsheet(sheet_url)
+    register = clean_register(raw_register, date)
+    frequency, days = task_frequency(register)
+    groups_norm, groups = normalized_points(register)
+    return raw_register, register, frequency, days, groups_norm, groups
+
+
+def compute_plots(register, frequency, days, groups_norm, groups):
+    fig1 = plot_daily_task_register(register)
+    fig2 = plot_frequency_histogram_tasks(frequency, days)
+    fig3 = plot_frequency_histogram_groups(register, frequency, days)
+    fig4 = plot_completed_task_percentage(register, groups_norm, groups)
+    fig5 = plot_daily_points(groups_norm)
+    return fig1, fig2, fig3, fig4, fig5
+
+
+def main():
     # Sample data
-    # url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
-    # day = datetime(2022, 7, 15)  # Sample register
+    # sheet_url = 'https://docs.google.com/spreadsheets/d/1oQNtGS4UCbiHvHIOjpUrm3MTqUJzlHmwIcK0wqP1IrQ/edit#gid=0'
+    # date = datetime(2022, 7, 15)  # Sample register
     # path = '/home/txan/Descargas/habitos_modelo.pdf'
 
     # Actual data
-    url = 'https://docs.google.com/spreadsheets/d/1X5BtfmzyTD_zXmcdnXxK85hmbVBn0spicDqbwev3WYI/edit#gid=0'
-    day = datetime.today()
-    path = '/home/txan/Descargas/habitos.pdf'
+    sheet_url = 'https://docs.google.com/spreadsheets/d/1X5BtfmzyTD_zXmcdnXxK85hmbVBn0spicDqbwev3WYI/edit#gid=0'
 
-    raw_data = read_register_spreadsheet(url)
-    data = clean_register(raw_data, day)
-    frequency_tasks, time_days = task_frequency(data)
-    groups_points, register_groups = normalized_points(data)
+    # Habits 5 days
+    # date = datetime(2022, 7, 6)  # 5 days
+    # path = '/home/txan/Descargas/habitos_5dias.pdf'
 
-    plot1 = plot_daily_task_register(data)
-    plot2 = plot_frequency_histogram_tasks(frequency_tasks, time_days)
-    plot3 = plot_frequency_histogram_groups(data, frequency_tasks, time_days)
-    plot4 = plot_completed_task_percentage(data, groups_points, register_groups)
-    plot5 = plot_daily_points(groups_points)
+    # Habits 10 days
+    date = datetime(2022, 7, 11)  # 10 days
+    path = '/home/txan/Descargas/habitos_10dias.pdf'
 
-    pdf_report(path, plot1, plot2, plot3, plot4, plot5)
+    # Habits up today
+    # date = datetime.today()
+    # path = '/home/txan/Descargas/habitos.pdf'
+
+    raw_register, register, frequency, days, groups_norm, groups = compute_tables(sheet_url, date)
+    fig1, fig2, fig3, fig4, fig5 = compute_plots(register, frequency, days, groups_norm, groups)
+    pdf_report(path, fig1, fig2, fig3, fig4, fig5)
+    return raw_register, register, frequency, days, groups_norm, groups
+
+
+if __name__ == '__main__':
+    raw_data, data, tasks_frequency, time, group_points, groups_len = main()
